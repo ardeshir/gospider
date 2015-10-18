@@ -124,7 +124,7 @@ func main(){
 		}
 	    select {
 		case sC := <- statusChannel:
-			fmt.Println("Message on StatusChannel", sC)
+	fmt.Printf("StatusChannel %d, Status: %t\n", sC,applicationStatus)
              
 	   }
 	}
