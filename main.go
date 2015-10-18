@@ -24,10 +24,10 @@ func readURLs(statusChannel chan int, textChannel chan string) {
 	time.Sleep(time.Millisecond * 3)
 	fmt.Println("Grapping...", len(urls), " urls")
 	for i := 0; i < totalURLCount; i++ {
-		fmt.Println("Url: ", i+1, urls[i])
+		fmt.Printf("Url: %d, %s\n", i, urls[i])
 		resp, _ := http.Get(urls[i])
 		text, err := ioutil.ReadAll(resp.Body)
-
+                fmt.Println(resp.StatusCode)
   		/* seeing text
                 if err == nil {
 		fmt.Printf("%s", string(text))
@@ -35,17 +35,16 @@ func readURLs(statusChannel chan int, textChannel chan string) {
 		*/ 
 	
 		textChannel <- string(text)
-
+                urlsProcessed++
 		if err != nil {
 			fmt.Println("No HTML Body")
 		}
-
+		
 		statusChannel <- 0
 	}
 }
 
 func addToScrapedText(textChannel chan string, processChannel chan bool){
-     proc = 1;
 	
 	for {
 		select {
@@ -62,7 +61,7 @@ func addToScrapedText(textChannel chan string, processChannel chan bool){
 		case tC := <- textChannel:
 		fullText += tC
                 fmt.Printf("Proc %d in tC adding text\n", proc)
-                proc++
+                proc++ 
  	      }
 	}
 }
@@ -75,8 +74,7 @@ func evaluateStatus(statusChannel chan int, textChannel chan string, processChan
 		fmt.Println("urlProc:", urlsProcessed, " TotalUrls:", totalURLCount)
 		urlsProcessed++
 		if status == 0 {
-			fmt.Println("Got url")
-                urlsProcessed++
+			fmt.Printf("Got url: %d\n", urlsProcessed)
 		}
 		if status == 1 {
 			close(statusChannel)
@@ -100,7 +98,7 @@ func main(){
 	processChannel := make(chan bool)
 	totalURLCount = 0
 	v1 = 1
-	urls = append(urls, "http://ardeshir.org")
+	urls = append(urls, "http://admin.hennepintech.edu")
 	urls = append(urls, "http://joymonk.com")
 	urls = append(urls, "http://metalearn.org")
 	urls = append(urls, "http://scholarlylife.com")
@@ -108,7 +106,7 @@ func main(){
 
 	fmt.Println("Starting Sprider version  ", v1)
 	
-	urlsProcessed = 0
+	urlsProcessed = 0 
 	totalURLCount = len(urls)
 	
 	go evaluateStatus(statusChannel, textChannel, processChannel)
@@ -127,6 +125,7 @@ func main(){
 	    select {
 		case sC := <- statusChannel:
 			fmt.Println("Message on StatusChannel", sC)
+             
 	   }
 	}
 }		
