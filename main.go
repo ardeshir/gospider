@@ -92,7 +92,7 @@ func main(){
 	urls = append(urls, "http://scholarlylife.com")
 	urls = append(urls, "http://univrs.io")
 
-	fmt.Println("Starting sprider...")
+	fmt.Println("Starting Sprider version  ", v1)
 	
 	urlsProcessed = 0
 	totalURLCount = len(urls)
