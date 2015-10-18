@@ -22,7 +22,7 @@ var v1 int
 func readURLs(statusChannel chan int, textChannel chan string) {
 	
 	time.Sleep(time.Millisecond * 1)
-	fmt.Println("Grapping...", len(urls), "urls\n")
+	fmt.Println("Grapping...", len(urls), " urls")
 	for i := 0, i < totalURLCount; i++ {
 		fmt.Println("Url: ", i, ulrs[i])
 		resp, _ := http.Get(urls[i])
@@ -63,13 +63,13 @@ func evaluateStatus(statusChannel chan int, textChannel chan string, processChan
 		fmt.Println(urlsProcessed, totalURLCount)
 		urlsProcessed++
 		if status == 0 {
-			fmt.Println("Got url\n")
+			fmt.Println("Got url")
 		}
 		if status == 1 {
 			close(statusChannel)
 		}
 		if urlsProcessed == totalURLCount {
-			fmt.Println("Read all top-level URLs\n")
+			fmt.Println("Read all top-level URLs")
 			processChannel <- false
 			applicationStatus = false
 		}
@@ -77,4 +77,40 @@ func evaluateStatus(statusChannel chan int, textChannel chan string, processChan
 	}
 }
 
+// adding main 
+
+func main(){
+	applicationStatus = true
+	statusChannel := make(chan int)
+	textChannel := make(chan string)
+	processChannel := make(chan bool)
+	totalURLCount = 0
+
+	urls = append(urls, "http://ardeshir.org")
+	urls = append(urls, "http://joymonk.com")
+	urls = append(urls, "http://metalearn.org")
+	urls = append(urls, "http://scholarlylife.com")
+	urls = append(urls, "http://univrs.io")
+
+	fmt.Println("Starting sprider...")
 	
+	urlsProcessed = 0
+	totalURLCount = len(urls)
+	
+	go evaluateStatus(statusChannel, textChannel, processChannel)
+
+	go readURLs(statusChannel, processChannel)
+
+	for {
+		if applicationStatus == false {
+			fmt.Println(fullText)
+			fmt.Println("=-=-=-=-=-=-=-=-=")
+			fmt.Println("Done, bye!")
+		break
+		}
+	    select {
+		case sC := <- statusChannel:
+			fmt.Println("Message on StatusChannel", sC)
+	   }
+	}
+}		
