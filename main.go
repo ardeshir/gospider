@@ -15,7 +15,7 @@ var urlsProcessed int
 var foundUrls []string
 var fullText string
 var totalURLCount int
-var wg sync.WaitGroup
+//  var wg sync.WaitGroup
 
 var v1 int
 
@@ -85,7 +85,7 @@ func main(){
 	textChannel := make(chan string)
 	processChannel := make(chan bool)
 	totalURLCount = 0
-
+	v1 = 1
 	urls = append(urls, "http://ardeshir.org")
 	urls = append(urls, "http://joymonk.com")
 	urls = append(urls, "http://metalearn.org")
@@ -100,6 +100,8 @@ func main(){
 	go evaluateStatus(statusChannel, textChannel, processChannel)
 
 	go readURLs(statusChannel, textChannel)
+	
+	go addToScrapedText(textChannel, processChannel)
 
 	for {
 		if applicationStatus == false {
