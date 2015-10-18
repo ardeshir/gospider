@@ -9,7 +9,7 @@ import(
 
 // some global variables
 
-var applicationStaus bool
+var applicationStatus bool
 var urls []string
 var urlsProcessed int
 var foundUrls []string
