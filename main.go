@@ -109,11 +109,13 @@ func main(){
 	urlsProcessed = 0 
 	totalURLCount = len(urls)
 	
-	go evaluateStatus(statusChannel, textChannel, processChannel)
+	// go evaluateStatus(statusChannel, textChannel, processChannel)
 
 	go readURLs(statusChannel, textChannel)
 	
 	go addToScrapedText(textChannel, processChannel)
+
+	go evalutateStatus(statusChannel, textChannel, processChannel)
 
 	for {
 		if applicationStatus == false {
