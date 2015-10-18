@@ -60,7 +60,7 @@ func evaluateStatus(statusChannel chan int, textChannel chan string, processChan
 	for {
 	    select {
 		case status := <- statusChannel:
-		fmt.Println(urlsProcessed, totalURLCount)
+		fmt.Println("urlProc:", urlsProcessed, " TotalUrls:", totalURLCount)
 		urlsProcessed++
 		if status == 0 {
 			fmt.Println("Got url")
