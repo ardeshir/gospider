@@ -54,4 +54,27 @@ func addToScrapedText(textChannel chan string, processChannel chan bool){
  	      }
 	}
 }
+
+func evaluateStatus(statusChannel chan int, textChannel chan string, processChannel chan bool){
+
+	for {
+	    select {
+		case status := <- statusChannel:
+		fmt.Println(urlsProcessed, totalURLCount)
+		urlsProcessed++
+		if status == 0 {
+			fmt.Println("Got url\n")
+		}
+		if status == 1 {
+			close(statusChannel)
+		}
+		if urlsProcessed == totalURLCount {
+			fmt.Println("Read all top-level URLs\n")
+			processChannel <- false
+			applicationStatus = false
+		}
+	   }
+	}
+}
+
 	
