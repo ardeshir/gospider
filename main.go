@@ -23,7 +23,7 @@ func readURLs(statusChannel chan int, textChannel chan string) {
 	
 	time.Sleep(time.Millisecond * 1)
 	fmt.Println("Grapping...", len(urls), " urls")
-	for i := 0, i < totalURLCount; i++ {
+	for i := 0; i < totalURLCount; i++ {
 		fmt.Println("Url: ", i, ulrs[i])
 		resp, _ := http.Get(urls[i])
 		text, err := ioutil.ReadAll(resp.Body)
