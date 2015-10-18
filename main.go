@@ -16,7 +16,7 @@ var foundUrls []string
 var fullText string
 var totalURLCount int
 //  var wg sync.WaitGroup
-
+var proc int 
 var v1 int
 
 func readURLs(statusChannel chan int, textChannel chan string) {
@@ -28,11 +28,11 @@ func readURLs(statusChannel chan int, textChannel chan string) {
 		resp, _ := http.Get(urls[i])
 		text, err := ioutil.ReadAll(resp.Body)
 
-  		// seeing text
+  		/* seeing text
                 if err == nil {
 		fmt.Printf("%s", string(text))
                 }
-		// comment out
+		*/ 
 	
 		textChannel <- string(text)
 
@@ -45,18 +45,24 @@ func readURLs(statusChannel chan int, textChannel chan string) {
 }
 
 func addToScrapedText(textChannel chan string, processChannel chan bool){
+     proc = 1;
+	
 	for {
 		select {
 		case pC := <- processChannel:
 			if pC == true {
 			 // hang on
+                        fmt.Printf("Proc %d in pC true", proc)
 			}
 		if pC == false {
 			close(textChannel)
 			close(processChannel)
+                 break
 		}
 		case tC := <- textChannel:
 		fullText += tC
+                fmt.Printf("Proc %d in tC adding text\n", proc)
+                proc++
  	      }
 	}
 }
@@ -70,6 +76,7 @@ func evaluateStatus(statusChannel chan int, textChannel chan string, processChan
 		urlsProcessed++
 		if status == 0 {
 			fmt.Println("Got url")
+                urlsProcessed++
 		}
 		if status == 1 {
 			close(statusChannel)
@@ -78,6 +85,7 @@ func evaluateStatus(statusChannel chan int, textChannel chan string, processChan
 			fmt.Println("Read all top-level URLs")
 			processChannel <- false
 			applicationStatus = false
+                break
 		}
 	   }
 	}
