@@ -38,4 +38,20 @@ func readURLs(statusChannel chan int, textChannel chan string) {
 	}
 }
 
-
+func addToScrapedText(textChannel chan string, processChannel chan bool){
+	for {
+		select {
+		case pC := <- processChannel:
+			if pC == true {
+			 // hang on
+			}
+		if pC == false {
+			close(textChannel)
+			close(processChannel)
+		}
+		case tC := <- textChannel:
+		fullText += tC
+ 	      }
+	}
+}
+	
