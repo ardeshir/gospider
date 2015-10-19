@@ -24,18 +24,13 @@ func readURLs(statusChannel chan int, textChannel chan string) {
 	time.Sleep(time.Millisecond * 3)
 	fmt.Println("Grapping...", len(urls), " urls")
 	for i := 0; i < totalURLCount; i++ {
-		fmt.Printf("Url: %d, %s\n", i, urls[i])
+
+		// fmt.Printf("Url: %d, %s\n", i, urls[i])
 		resp, _ := http.Get(urls[i])
 		text, err := ioutil.ReadAll(resp.Body)
-                fmt.Println(resp.StatusCode)
-  		/* seeing text
-                if err == nil {
-		fmt.Printf("%s", string(text))
-                }
-		*/ 
-	
+                fmt.Printf("Resp Code: %d ->", resp.StatusCode)
 		textChannel <- string(text)
-                urlsProcessed++
+	        fmt.Printf("Url: %d, %s\n", i, urls[i])	
 		if err != nil {
 			fmt.Println("No HTML Body")
 		}
@@ -44,14 +39,13 @@ func readURLs(statusChannel chan int, textChannel chan string) {
 	}
 }
 
-func addToScrapedText(textChannel chan string, processChannel chan bool){
+func addToScrapedText(statusChannel chan int, textChannel chan string, processChannel chan bool){
 	
 	for {
 		select {
 		case pC := <- processChannel:
 			if pC == true {
 			 // hang on
-                        fmt.Printf("Proc %d in pC true", proc)
 			}
 		if pC == false {
 			close(textChannel)
@@ -60,8 +54,11 @@ func addToScrapedText(textChannel chan string, processChannel chan bool){
 		}
 		case tC := <- textChannel:
 		fullText += tC
-                fmt.Printf("Proc %d in tC adding text\n", proc)
-                proc++ 
+                urlsProcessed++
+                fmt.Printf("UrlsProcessed: %d in tC adding text\n", urlsProcessed)
+                if(urlsProcessed  == totalURLCount) {
+                    applicationStatus = false
+                } 
  	      }
 	}
 }
@@ -72,20 +69,21 @@ func evaluateStatus(statusChannel chan int, textChannel chan string, processChan
 	    select {
 		case status := <- statusChannel:
 		fmt.Println("urlProc:", urlsProcessed, " TotalUrls:", totalURLCount)
-		urlsProcessed++
+		// urlsProcessed++
 		if status == 0 {
-			fmt.Printf("Got url: %d\n", urlsProcessed)
+			fmt.Printf("evalStatus:  %d, urlsProcessed: %d\n", status, urlsProcessed)
 		}
 		if status == 1 {
+                        fmt.Printf("evalStatus:  %d\n", status)
 			close(statusChannel)
 		}
-		if urlsProcessed == totalURLCount {
-			fmt.Println("Read all top-level URLs")
-			processChannel <- false
-			applicationStatus = false
-                break
-		}
-	   }
+       	   }
+             /* if urlsProcessed == totalURLCount {
+		fmt.Println("Read all top-level URLs")
+		processChannel <- false
+		applicationStatus = false
+             break
+             } */
 	}
 }
 
@@ -113,21 +111,21 @@ func main(){
 
 	go readURLs(statusChannel, textChannel)
 	
-	go addToScrapedText(textChannel, processChannel)
+	go addToScrapedText(statusChannel, textChannel, processChannel)
 
-	go evalutateStatus(statusChannel, textChannel, processChannel)
+	go evaluateStatus(statusChannel, textChannel, processChannel)
 
-	for {
-		if applicationStatus == false {
-			fmt.Println(fullText)
-			fmt.Println("=-=-=-=-=-=-=-=-=")
-			fmt.Println("Done, bye!")
-		break
-		}
+       for {
 	    select {
-		case sC := <- statusChannel:
-	fmt.Printf("StatusChannel %d, Status: %t\n", sC,applicationStatus)
-             
-	   }
+         	case sC := <- statusChannel:
+	               fmt.Printf("StatusChannel %d, Status: %t\n", sC,applicationStatus)
+	    } 
+
+             if applicationStatus == false {
+		 fmt.Println("fullText...")
+		// fmt.Println("Done, bye!")
+		break
+	    }
 	}
+    fmt.Println("End of program!")
 }		
