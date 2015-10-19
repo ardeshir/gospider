@@ -95,7 +95,7 @@ func main(){
 	textChannel := make(chan string)
 	processChannel := make(chan bool)
 	totalURLCount = 0
-	v1 = 1
+	v1 = 2
 	urls = append(urls, "http://admin.hennepintech.edu")
 	urls = append(urls, "http://joymonk.com")
 	urls = append(urls, "http://metalearn.org")
@@ -118,12 +118,11 @@ func main(){
        for {
 	    select {
          	case sC := <- statusChannel:
-	               fmt.Printf("StatusChannel %d, Status: %t\n", sC,applicationStatus)
+	               fmt.Printf("StatusChannel %d, AppStatus: %t\n", sC,applicationStatus)
 	    } 
 
              if applicationStatus == false {
 		 fmt.Println("fullText...")
-		// fmt.Println("Done, bye!")
 		break
 	    }
 	}
